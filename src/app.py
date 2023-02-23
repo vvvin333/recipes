@@ -1,49 +1,19 @@
-import json
 import logging
-
 from fastapi import FastAPI, Query
-from math import inf
-from pydantic import BaseModel
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from models import RecommendedRecipe
+from shortcuts import parse_recipes_dict, ingredients_dict
 
 app = FastAPI(debug=True)
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 DATA_PATH = "data/recipes.json"
-
-
-class RecommendedRecipe(BaseModel):
-    name: str
-    q: int
-
-    def __str__(self):
-        return f"{self.name}: {self.q}"
 
 
 @app.get("/")
 async def root():
     return parse_recipes_dict(DATA_PATH)
-
-
-def ingredients_dict(ingredients: dict[str, list[str | int]]) -> dict[str, int]:
-    result = {}
-    for name, q in zip(ingredients["name"], ingredients["q"]):
-        result[name] = q
-    return result
-
-
-def parse_recipes_dict(filename: str) -> dict[str, dict[str, int]]:
-    result: dict[str, dict[str, int]] = {}
-    with (file := open(filename)):
-        data = json.load(file)
-        for recipe in data["recipes"]:
-            result[recipe["name"]] = {}
-            for item in recipe["components"]:
-                result[recipe["name"]] |= {
-                    item["item"]: item["q"]
-                }
-    return result
 
 
 @app.get("/suggest_recipes/")
@@ -79,6 +49,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        "main:app",
+        "app:app",
         reload=True,
     )
