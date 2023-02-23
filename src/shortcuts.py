@@ -1,4 +1,7 @@
 import json
+from typing import Any, Sequence
+
+from constants import LOGS_SEPARATOR
 
 
 def ingredients_dict(ingredients: dict[str, list[str | int]]) -> dict[str, int]:
@@ -19,3 +22,9 @@ def parse_recipes_dict(filename: str) -> dict[str, dict[str, int]]:
                     item["item"]: item["q"]
                 }
     return result
+
+
+def parse_logs(filename: str = "logfile.log") -> Sequence[dict[str, Any]]:
+    with (file := open(filename)):
+        data = file.read().split(LOGS_SEPARATOR)[:-1]
+    return (json.loads(obj) for obj in data)

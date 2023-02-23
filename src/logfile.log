@@ -1,0 +1,44 @@
+{
+  "recipes": {
+    "log": {
+      "level": "INFO",
+      "type": "app",
+      "timestamp": "2023-02-23 18:56:12",
+      "msg_template": "Recipes: %s; %s; %s",
+      "message": "Recipes: Салат «Русский»: 4; Салат «Ленинградский»: 2; Салат с рыбой и овощами: 0"
+    }
+  }
+}###
+{
+  "recipes": {
+    "log": {
+      "level": "INFO",
+      "type": "app",
+      "timestamp": "2023-02-23 18:56:47",
+      "msg_template": "Recipes: %s; %s; %s",
+      "message": "Recipes: Салат «Русский»: 0; Салат «Ленинградский»: 0; Салат с рыбой и овощами: 0"
+    }
+  }
+}###
+{
+  "recipes": {
+    "log": {
+      "level": "INFO",
+      "type": "app",
+      "timestamp": "2023-02-23 18:57:07",
+      "msg_template": "Recipes: %s; %s; %s",
+      "message": "Recipes: Салат «Русский»: 4; Салат «Ленинградский»: 2; Салат с рыбой и овощами: 0"
+    }
+  }
+}###
+{
+  "recipes": {
+    "log": {
+      "level": "INFO",
+      "type": "app",
+      "timestamp": "2023-02-23 19:08:18",
+      "msg_template": "Recipes: %s; %s; %s",
+      "message": "Recipes: Салат «Русский»: 0; Салат «Ленинградский»: 0; Салат с рыбой и овощами: 0"
+    }
+  }
+}###

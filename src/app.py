@@ -1,19 +1,21 @@
-import logging
+from datetime import datetime, timedelta
+from math import inf
+from http import HTTPStatus
 from fastapi import FastAPI, Query
 
+import app_logger
+from constants import RECIPES_DIRECTORY_PATH, DATETIME_FORMAT
 from models import RecommendedRecipe
-from shortcuts import parse_recipes_dict, ingredients_dict
+from shortcuts import parse_recipes_dict, ingredients_dict, parse_logs
 
 app = FastAPI(debug=True)
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-DATA_PATH = "data/recipes.json"
+formatter = app_logger.CustomFormatter('%(asctime)s')
+logger = app_logger.get_logger(__name__, formatter)
 
 
 @app.get("/")
 async def root():
-    return parse_recipes_dict(DATA_PATH)
+    return parse_recipes_dict(RECIPES_DIRECTORY_PATH)
 
 
 @app.get("/suggest_recipes/")
@@ -24,7 +26,7 @@ def get_recipes(
     result: list[RecommendedRecipe] = []
     ingredients = ingredients_dict({"name": name, "q": q})
 
-    recipes = parse_recipes_dict(DATA_PATH)
+    recipes = parse_recipes_dict(RECIPES_DIRECTORY_PATH)
     if not recipes:
         logger.warning("No recipes")
         return []
@@ -40,7 +42,7 @@ def get_recipes(
             min_max_for_recipe = min(min_max_for_recipe, max_portions)
         item.q = min_max_for_recipe
         result.append(item)
-    logger.info(f"Recipes were chosen: {'; '.join(['%s'] * len(result))}", *result)
+    logger.info(f"Recipes: {'; '.join(['%s'] * len(result))}", *result)
 
     return result
 
