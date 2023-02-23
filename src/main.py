@@ -1,21 +1,24 @@
 import json
+import logging
+
+from fastapi import FastAPI, Query
 from math import inf
-from fastapi import Depends, FastAPI, Query
 from pydantic import BaseModel
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(debug=True)
 
 DATA_PATH = "data/recipes.json"
 
 
-class Item(BaseModel):
-    name: str
-    q: int
-
-
 class RecommendedRecipe(BaseModel):
     name: str
     q: int
+
+    def __str__(self):
+        return f"{self.name}: {self.q}"
 
 
 @app.get("/")
@@ -31,7 +34,7 @@ def ingredients_dict(ingredients: dict[str, list[str | int]]) -> dict[str, int]:
 
 
 def parse_recipes_dict(filename: str) -> dict[str, dict[str, int]]:
-    result = {}
+    result: dict[str, dict[str, int]] = {}
     with (file := open(filename)):
         data = json.load(file)
         for recipe in data["recipes"]:
@@ -50,7 +53,12 @@ def get_recipes(
 ) -> list[RecommendedRecipe]:
     result: list[RecommendedRecipe] = []
     ingredients = ingredients_dict({"name": name, "q": q})
+
     recipes = parse_recipes_dict(DATA_PATH)
+    if not recipes:
+        logger.warning("No recipes")
+        return []
+
     for recipe_name, recipe_ingredients in recipes.items():
         item = RecommendedRecipe(
             name=recipe_name,
@@ -62,4 +70,15 @@ def get_recipes(
             min_max_for_recipe = min(min_max_for_recipe, max_portions)
         item.q = min_max_for_recipe
         result.append(item)
+    logger.info(f"Recipes were chosen: {'; '.join(['%s'] * len(result))}", *result)
+
     return result
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "main:app",
+        reload=True,
+    )
