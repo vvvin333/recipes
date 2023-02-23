@@ -47,6 +47,21 @@ def get_recipes(
     return result
 
 
+@app.get("/last_suggests/")
+def get_last_suggested_recipes(
+        hours: int = Query(default=...),
+) -> list[str]:
+    result = []
+    for item in parse_logs():
+        suggestion = item.get("recipes", {}).get("log", {})
+        if "Recipes:" in suggestion.get("msg_template"):
+            log_time = datetime.strptime(suggestion["timestamp"], DATETIME_FORMAT)
+            start = datetime.now() - timedelta(hours=hours)
+            if log_time >= start:
+                result.append(suggestion["message"])
+    return result
+
+
 if __name__ == "__main__":
     import uvicorn
 
